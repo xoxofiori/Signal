@@ -125,7 +125,7 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
                 {step === "pitch" && "Step 3 · Engineering pitch"}
               </p>
               <h1 className="mt-2 font-display text-[46px] leading-[1.02]">
-                {showTitle ? analysis.projectName || "PRD scorecard" : "Did the PRD work?"}
+                {showTitle ? analysis.projectName || "PRD scorecard" : "Let's get to work"}
               </h1>
               <p className="mt-2 text-[15px] text-[#5f574b]">
                 {step === "input" && "Map post-launch feedback to your PRD goals, then pitch what to fix next."}
