@@ -7,13 +7,13 @@ import StatusBadge from "./StatusBadge";
 export default function GoalCard({ goal, index, feedback }: { goal: GoalResult; index: number; feedback: FeedbackItem[] }) {
   const n = goal.feedbackIds.length;
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-line bg-bg p-5 shadow-[0_1px_2px_rgba(28,25,23,0.04)]">
+    <article className="flex flex-col gap-3 card p-5">
       <div className="flex items-center justify-between gap-2">
         <StatusBadge status={goal.status} />
-        <span className="text-xs font-medium text-muted">Goal {index + 1}</span>
+        <span className="eyebrow text-muted">Goal {String(index + 1).padStart(2, "0")}</span>
       </div>
       <h3 className="text-[15px] font-semibold leading-snug">{goal.goal}</h3>
-      <p className="text-sm leading-relaxed text-stone-700">{goal.verdict}</p>
+      <p className="text-sm leading-relaxed text-[#5f574b]">{goal.verdict}</p>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         <span className="font-medium text-ink">
           {n} linked item{n === 1 ? "" : "s"}

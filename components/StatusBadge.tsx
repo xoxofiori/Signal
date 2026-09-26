@@ -9,7 +9,7 @@ export const STATUS_META: Record<Status, { label: string; cls: string; dot: stri
 export default function StatusBadge({ status }: { status: Status }) {
   const m = STATUS_META[status];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${m.cls}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${m.cls}`}>
       <StatusIcon status={status} />
       {m.label}
     </span>

@@ -24,19 +24,19 @@ export default function PitchView({
         <CopyButton label="Copy as ChatPRD prompt" primary getText={() => chatPrdPrompt(pitch, projectName, item)} />
       </PitchToolbar>
 
-      <article className="mx-auto max-w-[800px] rounded-xl border border-line bg-bg px-8 py-9 shadow-[0_1px_3px_rgba(28,25,23,0.06)] sm:px-12">
-        <p className="text-xs font-medium uppercase tracking-wider text-accent">
+      <article className="card mx-auto max-w-[800px] bg-white px-8 py-10 sm:px-14">
+        <p className="eyebrow text-highlight">
           Engineering pitch{projectName ? ` · ${projectName}` : ""}
         </p>
-        <h2 className="mt-2 text-[26px] font-semibold leading-tight tracking-tight">{pitch.title}</h2>
+        <h2 className="mt-3 font-display text-[36px] leading-[1.08]">{pitch.title}</h2>
 
-        <dl className="mt-5 grid gap-4 rounded-lg bg-surface px-4 py-3 text-sm sm:grid-cols-[1fr_auto]">
+        <dl className="mt-6 grid gap-4 rounded-2xl bg-surface px-5 py-4 text-sm sm:grid-cols-[1fr_auto]">
           <div>
-            <dt className="text-xs font-medium text-muted">PRD goal affected</dt>
+            <dt className="eyebrow text-muted">PRD goal affected</dt>
             <dd className="mt-0.5 font-medium">{pitch.prdGoal}</dd>
           </div>
           <div className="sm:text-right">
-            <dt className="text-xs font-medium text-muted">Priority score</dt>
+            <dt className="eyebrow text-muted">Priority score</dt>
             <dd className="mt-0.5 font-medium tabular-nums">
               {item.total}/15
               <span className="ml-1.5 font-normal text-muted">
@@ -81,7 +81,7 @@ export default function PitchView({
         </Section>
 
         <Section title="The ask">
-          <p className="rounded-lg border-l-2 border-accent bg-accent-soft/60 px-4 py-3 font-medium">{pitch.ask}</p>
+          <p className="rounded-2xl border-l-2 border-highlight bg-highlight-soft/70 px-5 py-4 font-medium">{pitch.ask}</p>
         </Section>
       </article>
     </div>
@@ -94,7 +94,7 @@ export function PitchToolbar({ onBack, children }: { onBack: () => void; childre
       <button
         type="button"
         onClick={onBack}
-        className="rounded-lg px-2 py-2 text-sm font-medium text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+        className="btn px-3 py-2 text-muted hover:bg-bg hover:text-ink"
       >
         ← Back to scorecard
       </button>
@@ -106,8 +106,8 @@ export function PitchToolbar({ onBack, children }: { onBack: () => void; childre
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-7">
-      <h3 className="mb-2 text-[13px] font-semibold uppercase tracking-wider text-muted">{title}</h3>
-      <div className="text-[15px] leading-relaxed text-stone-800">{children}</div>
+      <h3 className="eyebrow mb-2.5 text-muted">{title}</h3>
+      <div className="text-[15px] leading-relaxed text-[#2c2924]">{children}</div>
     </section>
   );
 }

@@ -7,7 +7,7 @@ export default function SourceBreakdown({ breakdown }: { breakdown: Record<strin
   return (
     <span className="flex flex-wrap gap-1">
       {entries.map(([source, n]) => (
-        <span key={source} className="rounded-md bg-surface px-1.5 py-0.5 text-xs text-muted">
+        <span key={source} className="rounded-full bg-surface px-2 py-0.5 text-xs text-muted">
           {source} <span className="font-medium text-ink">{n}</span>
         </span>
       ))}

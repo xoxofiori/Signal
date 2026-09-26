@@ -54,7 +54,7 @@ Restart `npm run dev`. The badge switches to "Live AI analysis", and both analys
 ## Tech stack
 
 - [Next.js 15](https://nextjs.org/) (App Router) + TypeScript
-- Tailwind CSS v4, Inter via `next/font`
+- Tailwind CSS v4; Geist, Geist Mono and Newsreader via `next/font`
 - [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) (server-side only)
 - [zod](https://zod.dev/) for request and response validation
 - No database and no auth. State lives in React, and nothing is persisted.

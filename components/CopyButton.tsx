@@ -37,11 +37,7 @@ export default function CopyButton({
         setState((await copyText(getText())) ? "copied" : "failed");
         setTimeout(() => setState("idle"), 1800);
       }}
-      className={`inline-flex min-w-[170px] items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-        primary
-          ? "bg-accent text-white shadow-sm hover:bg-accent-hover"
-          : "border border-line bg-bg text-ink hover:bg-surface"
-      }`}
+      className={`btn min-w-[190px] px-4 py-2 ${primary ? "btn-primary" : "btn-secondary"}`}
       aria-live="polite"
     >
       {state === "copied" ? "✓ Copied!" : state === "failed" ? "Copy failed" : label}

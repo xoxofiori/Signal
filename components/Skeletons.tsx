@@ -1,14 +1,14 @@
 function Bar({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-md bg-stone-200/70 ${className}`} />;
+  return <div className={`animate-pulse rounded-md bg-[#e9e2d6] ${className}`} />;
 }
 
-const card = "rounded-xl border border-line bg-bg shadow-[0_1px_2px_rgba(28,25,23,0.04)]";
+const card = "card";
 
 export function ScorecardSkeleton({ label }: { label: string }) {
   return (
     <div className="space-y-8" aria-busy="true" aria-live="polite">
       <p className="flex items-center gap-2 text-sm text-muted">
-        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent/30 border-t-accent" aria-hidden />
+        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-highlight/30 border-t-highlight" aria-hidden />
         {label}
       </p>
       <div className={`grid grid-cols-2 sm:grid-cols-5 ${card}`}>
@@ -57,9 +57,9 @@ export function ScorecardSkeleton({ label }: { label: string }) {
 
 export function PitchSkeleton() {
   return (
-    <div className={`mx-auto max-w-[800px] space-y-7 px-8 py-9 sm:px-12 ${card}`} aria-busy="true" aria-live="polite">
+    <div className={`mx-auto max-w-[800px] space-y-7 px-8 py-10 sm:px-14 ${card}`} aria-busy="true" aria-live="polite">
       <p className="flex items-center gap-2 text-sm text-muted">
-        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent/30 border-t-accent" aria-hidden />
+        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-highlight/30 border-t-highlight" aria-hidden />
         Writing the engineering pitch…
       </p>
       <div className="space-y-3">

@@ -115,24 +115,31 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
   return (
     <div className="min-h-screen">
       <Header demoMode={demoMode} />
-      <main className="mx-auto max-w-[1100px] px-6 pb-16 pt-7">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-[30px] font-semibold leading-tight tracking-tight">
-              {showTitle ? analysis.projectName || "PRD scorecard" : "Did the PRD work?"}
-            </h1>
-            <p className="mt-1 text-[15px] text-muted">
-              {step === "input" && "Map post-launch feedback to your PRD goals, then pitch what to fix next."}
-              {step === "scorecard" && "Post-launch scorecard: which PRD goals are working, and what to fix next."}
-              {step === "pitch" && "Evidence-backed engineering pitch for quarterly intake."}
-            </p>
+      <main className="mx-auto max-w-[1100px] px-4 pb-16 pt-6 sm:px-6">
+        <section className="hero relative mb-6 overflow-hidden rounded-[28px] border border-white/70 px-8 py-7 shadow-[0_1px_2px_rgba(28,26,23,0.04),0_18px_40px_-24px_rgba(160,96,20,0.35)]">
+          <div className="relative flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <p className="eyebrow text-highlight">
+                {step === "input" && "Step 1 · Input"}
+                {step === "scorecard" && "Step 2 · PRD scorecard"}
+                {step === "pitch" && "Step 3 · Engineering pitch"}
+              </p>
+              <h1 className="mt-2 font-display text-[46px] leading-[1.02]">
+                {showTitle ? analysis.projectName || "PRD scorecard" : "Did the PRD work?"}
+              </h1>
+              <p className="mt-2 text-[15px] text-[#5f574b]">
+                {step === "input" && "Map post-launch feedback to your PRD goals, then pitch what to fix next."}
+                {step === "scorecard" && "Which PRD goals are working, and what to fix next."}
+                {step === "pitch" && "An evidence-backed pitch for quarterly engineering intake."}
+              </p>
+            </div>
+            <Stepper
+              current={step}
+              reachable={{ input: !analyzing, scorecard: !!analysis && !analyzing, pitch: !!pitch }}
+              onSelect={goTo}
+            />
           </div>
-          <Stepper
-            current={step}
-            reachable={{ input: !analyzing, scorecard: !!analysis && !analyzing, pitch: !!pitch }}
-            onSelect={goTo}
-          />
-        </div>
+        </section>
 
         {step === "input" && (
           <InputForm
@@ -163,11 +170,11 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
               <button
                 type="button"
                 onClick={() => goTo("input")}
-                className="rounded-lg px-2 py-1 text-sm font-medium text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+                className="btn px-3 py-1.5 text-muted hover:bg-bg hover:text-ink"
               >
                 ← Edit inputs
               </button>
-              <span className="text-xs text-muted">
+              <span className="eyebrow text-muted">
                 {analysis.mode === "demo" ? "Sample analysis (demo mode)" : "Live analysis · quotes are verbatim from your feedback"}
               </span>
             </div>
@@ -203,7 +210,7 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
           </>
         )}
       </main>
-      <footer className="border-t border-line py-5 text-center text-xs text-muted">
+      <footer className="eyebrow py-6 text-center text-muted">
         Signal · post-launch PRD evaluation · nothing you paste is stored
       </footer>
     </div>

@@ -30,10 +30,10 @@ export default function InputForm({
   const set = (patch: Partial<InputValues>) => onChange({ ...values, ...patch });
 
   return (
-    <section className="rounded-xl border border-line bg-bg p-6 shadow-[0_1px_2px_rgba(28,25,23,0.04)]">
+    <section className="card p-7">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">What shipped, and what did users say?</h2>
+          <h2 className="font-display text-[27px] leading-tight">What shipped, and what did users say?</h2>
           <p className="mt-1 text-sm text-muted">
             Paste the PRD&apos;s goals and the raw post-launch feedback. Signal maps
             each piece of feedback to a goal and tells you what to fix next.
@@ -43,7 +43,7 @@ export default function InputForm({
           type="button"
           onClick={onLoadSample}
           disabled={loading}
-          className="rounded-lg border border-line bg-bg px-3.5 py-2 text-sm font-medium text-ink hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50"
+          className="btn btn-secondary px-4 py-2"
         >
           Load sample data
         </button>
@@ -111,7 +111,7 @@ export default function InputForm({
           type="button"
           onClick={onAnalyze}
           disabled={!canAnalyze}
-          className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:bg-stone-300"
+          className="btn btn-primary px-6 py-2.5"
         >
           {loading && (
             <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden />
@@ -124,7 +124,7 @@ export default function InputForm({
 }
 
 const inputCls =
-  "w-full rounded-lg border border-line bg-bg px-3 py-2 text-[14px] text-ink placeholder:text-stone-400 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20";
+  "w-full rounded-2xl border border-line bg-white/80 px-3.5 py-2.5 text-[14px] text-ink placeholder:text-[#b3aa9b] outline-none focus:border-highlight focus:ring-4 focus:ring-highlight/15";
 
 function Field({
   label,
@@ -142,10 +142,10 @@ function Field({
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-2">
-        <label htmlFor={htmlFor} className="text-sm font-medium">
+        <label htmlFor={htmlFor} className="eyebrow text-ink">
           {label}
         </label>
-        {count && <span className="text-xs text-muted">{count}</span>}
+        {count && <span className="eyebrow text-muted">{count}</span>}
       </div>
       {children}
       {hint && <p className="mt-1.5 text-xs text-muted">{hint}</p>}
