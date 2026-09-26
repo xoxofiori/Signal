@@ -6,18 +6,41 @@ import { parseFeedback, parseGoals } from "@/lib/parse";
 import type { AnalyzeResponse, ApiError, FixNextItem, Pitch, PitchResponse } from "@/lib/types";
 import Header from "./Header";
 import InputForm, { type InputValues } from "./InputForm";
-import PitchView from "./PitchView";
+import { DemoEditedNotice, ErrorState } from "./Notices";
+import PitchView, { PitchToolbar } from "./PitchView";
 import ScorecardView from "./ScorecardView";
+import { PitchSkeleton, ScorecardSkeleton } from "./Skeletons";
 import Stepper, { type Step } from "./Stepper";
 
 const EMPTY: InputValues = { projectName: "", goalsText: "", feedbackText: "" };
 
+async function postJson<T>(url: string, body: unknown, fallback: string): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error("Couldn't reach the Signal server. Is `npm run dev` still running?");
+  }
+  const data = (await res.json().catch(() => null)) as T | ApiError | null;
+  if (!data) throw new Error(fallback);
+  if (!res.ok || (typeof data === "object" && "error" in data)) {
+    throw new Error((data as ApiError).error || fallback);
+  }
+  return data as T;
+}
+
 export default function SignalApp({ demoMode }: { demoMode: boolean }) {
   const [values, setValues] = useState<InputValues>(EMPTY);
   const [step, setStep] = useState<Step>("input");
+
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+
   const [pitches, setPitches] = useState<Record<string, Pitch>>({});
   const [selected, setSelected] = useState<FixNextItem | null>(null);
   const [pitchLoading, setPitchLoading] = useState(false);
@@ -31,19 +54,15 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
     setAnalyzeError(null);
     setStep("scorecard");
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
+      const data = await postJson<AnalyzeResponse>(
+        "/api/analyze",
+        {
           projectName: values.projectName.trim(),
           goals: parseGoals(values.goalsText),
           feedback: parseFeedback(values.feedbackText),
-        }),
-      });
-      const data = (await res.json().catch(() => ({ error: "Unexpected response from the server." }))) as
-        | AnalyzeResponse
-        | ApiError;
-      if (!res.ok || "error" in data) throw new Error("error" in data ? data.error : "Analysis failed.");
+        },
+        "Analysis failed. Please try again.",
+      );
       setAnalysis(data);
       setPitches({});
       setSelected(null);
@@ -68,20 +87,16 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
     const ids = goal?.feedbackIds ?? theme?.feedbackIds ?? [];
     setPitchLoading(true);
     try {
-      const res = await fetch("/api/pitch", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
+      const data = await postJson<PitchResponse>(
+        "/api/pitch",
+        {
           projectName,
           item,
           context: { goal: goal?.goal, verdict: goal?.verdict, summary: theme?.summary },
           linkedFeedback: ids.map((i) => feedback[i]).filter(Boolean),
-        }),
-      });
-      const data = (await res.json().catch(() => ({ error: "Unexpected response from the server." }))) as
-        | PitchResponse
-        | ApiError;
-      if (!res.ok || "error" in data) throw new Error("error" in data ? data.error : "Pitch generation failed.");
+        },
+        "Pitch generation failed. Please try again.",
+      );
       setPitches((p) => ({ ...p, [item.id]: data.pitch }));
     } catch (err) {
       setPitchError(err instanceof Error ? err.message : "Pitch generation failed. Please try again.");
@@ -90,8 +105,12 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
     }
   }
 
-  const backToScorecard = () => setStep("scorecard");
+  const goTo = (s: Step) => {
+    setStep(s);
+    window.scrollTo({ top: 0 });
+  };
   const pitch = selected ? pitches[selected.id] : undefined;
+  const showTitle = step !== "input" && analysis && !analyzing;
 
   return (
     <div className="min-h-screen">
@@ -100,16 +119,18 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-[30px] font-semibold leading-tight tracking-tight">
-              {step === "input" || !analysis ? "Did the PRD work?" : analysis.projectName || "PRD scorecard"}
+              {showTitle ? analysis.projectName || "PRD scorecard" : "Did the PRD work?"}
             </h1>
             <p className="mt-1 text-[15px] text-muted">
-              Map post-launch feedback to your PRD goals, then pitch what to fix next.
+              {step === "input" && "Map post-launch feedback to your PRD goals, then pitch what to fix next."}
+              {step === "scorecard" && "Post-launch scorecard: which PRD goals are working, and what to fix next."}
+              {step === "pitch" && "Evidence-backed engineering pitch for quarterly intake."}
             </p>
           </div>
           <Stepper
             current={step}
             reachable={{ input: !analyzing, scorecard: !!analysis && !analyzing, pitch: !!pitch }}
-            onSelect={setStep}
+            onSelect={goTo}
           />
         </div>
 
@@ -124,23 +145,67 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
           />
         )}
 
-        {step === "scorecard" && analysis && !analyzing && (
-          <ScorecardView
-            scorecard={analysis.scorecard}
-            feedback={analysis.feedback}
-            onPitch={openPitch}
-            pitchReady={new Set(Object.keys(pitches))}
+        {step === "scorecard" && analyzing && (
+          <ScorecardSkeleton label={demoMode ? "Loading sample analysis…" : "Mapping feedback to PRD goals… this can take up to a minute."} />
+        )}
+        {step === "scorecard" && !analyzing && analyzeError && (
+          <ErrorState
+            title="We couldn't analyze that feedback"
+            message={analyzeError}
+            onRetry={analyze}
+            onBack={() => goTo("input")}
+            backLabel="Edit inputs"
           />
         )}
-        {step === "scorecard" && analyzing && <p className="text-muted">Analyzing…</p>}
-        {step === "scorecard" && analyzeError && <p className="text-failing">{analyzeError}</p>}
-
-        {step === "pitch" && analysis && pitch && (
-          <PitchView pitch={pitch} projectName={analysis.projectName} onBack={backToScorecard} />
+        {step === "scorecard" && !analyzing && !analyzeError && analysis && (
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => goTo("input")}
+                className="rounded-lg px-2 py-1 text-sm font-medium text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                ← Edit inputs
+              </button>
+              <span className="text-xs text-muted">
+                {analysis.mode === "demo" ? "Sample analysis (demo mode)" : "Live analysis · quotes are verbatim from your feedback"}
+              </span>
+            </div>
+            {analysis.inputsEdited && <DemoEditedNotice />}
+            <ScorecardView
+              scorecard={analysis.scorecard}
+              feedback={analysis.feedback}
+              onPitch={openPitch}
+              pitchReady={new Set(Object.keys(pitches))}
+            />
+          </div>
         )}
-        {step === "pitch" && pitchLoading && <p className="text-muted">Writing pitch…</p>}
-        {step === "pitch" && pitchError && <p className="text-failing">{pitchError}</p>}
+
+        {step === "pitch" && (
+          <>
+            {pitch && analysis && selected ? (
+              <PitchView pitch={pitch} item={selected} projectName={analysis.projectName} onBack={() => goTo("scorecard")} />
+            ) : (
+              <div className="space-y-4">
+                <PitchToolbar onBack={() => goTo("scorecard")} />
+                {pitchLoading && <PitchSkeleton />}
+                {!pitchLoading && pitchError && (
+                  <ErrorState
+                    title="We couldn't write that pitch"
+                    message={pitchError}
+                    onRetry={selected ? () => openPitch(selected) : undefined}
+                    onBack={() => goTo("scorecard")}
+                    backLabel="Back to scorecard"
+                  />
+                )}
+              </div>
+            )}
+          </>
+        )}
       </main>
+      <footer className="border-t border-line py-5 text-center text-xs text-muted">
+        Signal · post-launch PRD evaluation · nothing you paste is stored
+      </footer>
     </div>
   );
 }

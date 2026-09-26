@@ -101,9 +101,11 @@ export default function InputForm({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
         <p className="text-[13px] text-muted">
-          {demoMode
-            ? "Demo mode: Analyze returns the precomputed sample analysis."
-            : "Analysis runs on Claude via a server route. Nothing is stored."}
+          {goalCount === 0 || feedback.length === 0
+            ? "Add at least one goal and one feedback item to analyze — or load the sample data."
+            : demoMode
+              ? "Demo mode: Analyze returns the precomputed sample analysis."
+              : "Analysis runs on Claude via a server route. Nothing is stored."}
         </p>
         <button
           type="button"

@@ -1,25 +1,27 @@
 "use client";
 
 import { chatPrdPrompt, pitchToMarkdown } from "@/lib/markdown";
-import type { Pitch } from "@/lib/types";
+import type { FixNextItem, Pitch } from "@/lib/types";
 import CopyButton from "./CopyButton";
 import Quote from "./Quote";
 import SourceBreakdown from "./SourceBreakdown";
 
 export default function PitchView({
   pitch,
+  item,
   projectName,
   onBack,
 }: {
   pitch: Pitch;
+  item: FixNextItem;
   projectName: string;
   onBack: () => void;
 }) {
   return (
     <div className="space-y-4">
       <PitchToolbar onBack={onBack}>
-        <CopyButton label="Copy as Markdown" getText={() => pitchToMarkdown(pitch, projectName)} />
-        <CopyButton label="Copy as ChatPRD prompt" primary getText={() => chatPrdPrompt(pitch, projectName)} />
+        <CopyButton label="Copy as Markdown" getText={() => pitchToMarkdown(pitch, projectName, item)} />
+        <CopyButton label="Copy as ChatPRD prompt" primary getText={() => chatPrdPrompt(pitch, projectName, item)} />
       </PitchToolbar>
 
       <article className="mx-auto max-w-[800px] rounded-xl border border-line bg-bg px-8 py-9 shadow-[0_1px_3px_rgba(28,25,23,0.06)] sm:px-12">
@@ -33,10 +35,14 @@ export default function PitchView({
             <dt className="text-xs font-medium text-muted">PRD goal affected</dt>
             <dd className="mt-0.5 font-medium">{pitch.prdGoal}</dd>
           </div>
-          <div>
-            <dt className="text-xs font-medium text-muted">Evidence</dt>
-            <dd className="mt-0.5 font-medium">
-              {pitch.evidence.feedbackCount} feedback item{pitch.evidence.feedbackCount === 1 ? "" : "s"}
+          <div className="sm:text-right">
+            <dt className="text-xs font-medium text-muted">Priority score</dt>
+            <dd className="mt-0.5 font-medium tabular-nums">
+              {item.total}/15
+              <span className="ml-1.5 font-normal text-muted">
+                (stoppage {item.scores.stoppage.value} · impact {item.scores.impact.value} · urgency{" "}
+                {item.scores.urgency.value})
+              </span>
             </dd>
           </div>
         </dl>
