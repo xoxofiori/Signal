@@ -1,0 +1,262 @@
+{
+  "summary": {
+    "totalFeedback": 27,
+    "working": 2,
+    "atRisk": 2,
+    "failing": 1,
+    "unplannedCount": 2
+  },
+  "goals": [
+    {
+      "id": "g1",
+      "goal": "Moderators can review and tag an item in under 30 seconds.",
+      "status": "working",
+      "verdict": "Median review-and-tag time is about 22 seconds on standard items, comfortably under the 30-second target; only long videos run over.",
+      "feedbackIds": [
+        14,
+        15,
+        16
+      ],
+      "sourceBreakdown": {
+        "Sync": 1,
+        "Widget": 1,
+        "Observation": 1
+      },
+      "quotes": [
+        "Median review-and-tag time is around 22 seconds on standard items, down from roughly 45 in the old tool.",
+        "Video preview loads fast and the tag panel is right next to it. Much quicker than before.",
+        "Moderator cleared short-form clips in 15–25 seconds each; longer videos took closer to a minute, which the team considers expected."
+      ]
+    },
+    {
+      "id": "g2",
+      "goal": "Escalated sensitive content reaches the risk & response team within 5 minutes.",
+      "status": "failing",
+      "verdict": "Escalations routinely take 12–40 minutes to reach R&R because there is no alerting, acknowledgment, or severity ordering — far outside the 5-minute target.",
+      "feedbackIds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "sourceBreakdown": {
+        "Slack": 2,
+        "Sync": 2,
+        "Widget": 2,
+        "Observation": 1
+      },
+      "quotes": [
+        "Escalated a self-harm livestream at 2:14pm and R&R didn't pick it up until 2:41. That's 27 minutes on something that should take 5.",
+        "Watched a moderator escalate a child-safety item, then wait about 12 minutes before messaging the R&R on-call directly because the tool showed no acknowledgment.",
+        "Team leads report escalations sit in a shared inbox with no alerting — R&R only sees them when someone refreshes the page."
+      ]
+    },
+    {
+      "id": "g3",
+      "goal": "Moderators only see queues they're authorized for.",
+      "status": "working",
+      "verdict": "No access incidents since launch; moderators and leads say queue scoping works as intended, including for new hires.",
+      "feedbackIds": [
+        11,
+        12,
+        13
+      ],
+      "sourceBreakdown": {
+        "Widget": 1,
+        "Sync": 1,
+        "Slack": 1
+      },
+      "quotes": [
+        "Love that I only see the queues I'm trained for now. Way less noise.",
+        "New hire onboarding was smooth. She only saw the Spam queue until she finished graphic content training. Exactly what we wanted.",
+        "No access incidents reported since launch. Permission requests route through leads and take about a day, which everyone is fine with."
+      ]
+    },
+    {
+      "id": "g4",
+      "goal": "Policy tags are clear and consistent across moderators.",
+      "status": "at_risk",
+      "verdict": "Hover descriptions help, but moderators disagree on overlapping tags (about 12% disagreement in QA) and the tag list is hard to scan.",
+      "feedbackIds": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "sourceBreakdown": {
+        "Slack": 1,
+        "Sync": 1,
+        "Widget": 2
+      },
+      "quotes": [
+        "Is 'graphic violence' vs 'violent extremism' about intent or content? Three of us tagged the same video three different ways today.",
+        "QA found about 12% disagreement between the 'harassment' and 'bullying' tags in last week's audit sample.",
+        "Policy tag list is too long. I scroll past 30 tags to find 'spam'."
+      ]
+    },
+    {
+      "id": "g5",
+      "goal": "Team leads can see queue volume in real time to plan staffing.",
+      "status": "at_risk",
+      "verdict": "Leads value the dashboard, but a 15–20 minute lag and no per-queue or per-hour view mean it isn't real-time enough to staff thin queues.",
+      "feedbackIds": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "sourceBreakdown": {
+        "Sync": 2,
+        "Slack": 1,
+        "Observation": 1
+      },
+      "quotes": [
+        "Team leads say the volume dashboard lags 15–20 minutes behind the actual queue, so staffing calls get made on stale numbers.",
+        "We only have about 3 trained moderators per queue. When one calls out, I can't see the backlog building until it's already 200+ deep.",
+        "Team lead kept the old staffing spreadsheet open next to the dashboard to cross-check numbers during morning standup."
+      ]
+    }
+  ],
+  "unplanned": [
+    {
+      "id": "u1",
+      "title": "Tool slows or fails during livestream spikes",
+      "summary": "When live-event traffic spikes, the queue view slows to 10+ seconds per item, freezes, or throws errors that force a refresh and lose the moderator's place.",
+      "feedbackIds": [
+        24,
+        25,
+        26
+      ],
+      "quotes": [
+        "Tool froze for about 2 minutes during the Saturday night livestream spike. Couldn't load any videos.",
+        "During big live events the queue view takes 10+ seconds to load each item, and moderators fall behind fast.",
+        "Getting 'Something went wrong' every time traffic jumps. I have to refresh and I lose my place in the queue."
+      ]
+    },
+    {
+      "id": "u2",
+      "title": "No keyboard shortcuts",
+      "summary": "Every action requires the mouse. Moderators report wrist strain over long shifts and miss the J/K navigation and number-key tagging from the old tool.",
+      "feedbackIds": [
+        21,
+        22,
+        23
+      ],
+      "quotes": [
+        "Please add keyboard shortcuts. Clicking for every tag and every 'next' is killing my wrist by hour six.",
+        "Every moderator observed reached for the mouse for every action: approve, tag, next. Two were wearing wrist braces.",
+        "The old tool had J/K to move between items and number keys for tags. We lost all of that in v1."
+      ]
+    }
+  ],
+  "fixNext": [
+    {
+      "id": "f1",
+      "refType": "goal",
+      "refId": "g2",
+      "title": "Escalations take 12–40 minutes to reach Risk & Response",
+      "scores": {
+        "stoppage": {
+          "value": 4,
+          "rationale": "Moderators stall on escalated items and fall back to Slack to chase R&R manually."
+        },
+        "impact": {
+          "value": 4,
+          "rationale": "Affects every moderator who escalates and the whole R&R team; 7 reports across all four channels."
+        },
+        "urgency": {
+          "value": 5,
+          "rationale": "Self-harm and child-safety content waiting 12–40 minutes is a direct safety and compliance exposure."
+        }
+      },
+      "total": 13
+    },
+    {
+      "id": "f2",
+      "refType": "unplanned",
+      "refId": "u1",
+      "title": "Tool slows or fails during livestream spikes",
+      "scores": {
+        "stoppage": {
+          "value": 5,
+          "rationale": "The tool freezes or errors out entirely, so moderators cannot review anything."
+        },
+        "impact": {
+          "value": 3,
+          "rationale": "Hits all moderators on shift, but only during live-event spikes."
+        },
+        "urgency": {
+          "value": 4,
+          "rationale": "Spikes coincide with the highest volume of harmful live content."
+        }
+      },
+      "total": 12
+    },
+    {
+      "id": "f3",
+      "refType": "goal",
+      "refId": "g5",
+      "title": "Queue volume isn't visible in real time for staffing",
+      "scores": {
+        "stoppage": {
+          "value": 3,
+          "rationale": "With about 3 trained moderators per queue, one absence can quietly create a 200+ item backlog."
+        },
+        "impact": {
+          "value": 3,
+          "rationale": "Every team lead is affected, and understaffed queues slow down all moderators on them."
+        },
+        "urgency": {
+          "value": 3,
+          "rationale": "Staffing decisions are made daily on data that's 15–20 minutes stale."
+        }
+      },
+      "total": 9
+    },
+    {
+      "id": "f4",
+      "refType": "unplanned",
+      "refId": "u2",
+      "title": "No keyboard shortcuts",
+      "scores": {
+        "stoppage": {
+          "value": 2,
+          "rationale": "Work continues, just slower and with more physical strain."
+        },
+        "impact": {
+          "value": 4,
+          "rationale": "Every moderator, every item, every shift; some already wear wrist braces."
+        },
+        "urgency": {
+          "value": 2,
+          "rationale": "Ergonomic risk builds over time rather than causing an immediate incident."
+        }
+      },
+      "total": 8
+    },
+    {
+      "id": "f5",
+      "refType": "goal",
+      "refId": "g4",
+      "title": "Overlapping policy tags cause inconsistent decisions",
+      "scores": {
+        "stoppage": {
+          "value": 1,
+          "rationale": "Moderators can still tag items; the problem is consistency, not blockage."
+        },
+        "impact": {
+          "value": 3,
+          "rationale": "About 12% disagreement on common tags skews enforcement and QA metrics."
+        },
+        "urgency": {
+          "value": 3,
+          "rationale": "Inconsistent enforcement creates audit and policy-compliance risk."
+        }
+      },
+      "total": 7
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "f1": {
+    "title": "Make sensitive escalations reach Risk & Response in under 5 minutes",
+    "problem": "Escalated sensitive content (self-harm, child safety) is taking 12–40 minutes to reach the Risk & Response team, against a PRD target of 5 minutes. Escalations land in a shared inbox with no alerting, no acknowledgment back to the moderator, and no severity ordering, so R&R only sees them when someone refreshes the page.",
+    "evidence": {
+      "feedbackCount": 7,
+      "sources": {
+        "Slack": 2,
+        "Sync": 2,
+        "Widget": 2,
+        "Observation": 1
+      },
+      "quotes": [
+        "Escalated a self-harm livestream at 2:14pm and R&R didn't pick it up until 2:41. That's 27 minutes on something that should take 5.",
+        "Watched a moderator escalate a child-safety item, then wait about 12 minutes before messaging the R&R on-call directly because the tool showed no acknowledgment.",
+        "Overnight escalations are the worst. R&R has one person on after 10pm and the tool doesn't page them. Saw a 40-minute gap last Tuesday.",
+        "Team leads report escalations sit in a shared inbox with no alerting — R&R only sees them when someone refreshes the page."
+      ]
+    },
+    "prdGoal": "Escalated sensitive content reaches the risk & response team within 5 minutes.",
+    "whoAffected": "Content moderators who escalate sensitive items (every queue, every shift), the Risk & Response team — especially the single overnight on-call — and, ultimately, the at-risk users in the escalated content.",
+    "impactIfUnsolved": "Time-critical self-harm and child-safety content keeps waiting 12–40 minutes for specialist review, which is a direct user-safety and compliance exposure. Moderators will keep routing around the tool through Slack DMs, so there is no audit trail of when escalations were seen or actioned.",
+    "proposedDirection": [
+      "Real-time alerting to the R&R on-call (page/push, not a passive inbox), with automatic re-alert if unacknowledged after 3 minutes.",
+      "Acknowledgment loop: the moderator sees 'Received by R&R' with a timestamp once an escalation is picked up.",
+      "Severity-based ordering in the R&R view (self-harm and child safety first) instead of time-only sorting.",
+      "Promote Escalate to a primary one-click action next to the tag panel.",
+      "Instrument time-to-acknowledge so the 5-minute SLA is measurable and reportable."
+    ],
+    "ask": "One backend and one frontend engineer for roughly one sprint this quarter to ship alerting, acknowledgment, and severity ordering, plus 30 minutes with the R&R lead to confirm the paging and severity rules."
+  },
+  "f2": {
+    "title": "Keep the moderation tool usable during livestream traffic spikes",
+    "problem": "During live-event traffic spikes, the moderation queue slows to 10+ seconds per item, freezes for minutes at a time, or throws generic errors that force a refresh and lose the moderator's place. This wasn't a v1 PRD goal, but it blocks all review work exactly when volume is highest.",
+    "evidence": {
+      "feedbackCount": 3,
+      "sources": {
+        "Slack": 1,
+        "Sync": 1,
+        "Widget": 1
+      },
+      "quotes": [
+        "Tool froze for about 2 minutes during the Saturday night livestream spike. Couldn't load any videos.",
+        "During big live events the queue view takes 10+ seconds to load each item, and moderators fall behind fast.",
+        "Getting 'Something went wrong' every time traffic jumps. I have to refresh and I lose my place in the queue."
+      ]
+    },
+    "prdGoal": "Unplanned issue",
+    "whoAffected": "Every moderator on shift during live events, and the downstream users exposed to harmful livestream content while the queue is stalled.",
+    "impactIfUnsolved": "Harmful live content stays up longest precisely when the most people are watching. Each freeze also cascades: the backlog grows, moderators lose their place, and the 30-second review target from goal 1 falls apart under load.",
+    "proposedDirection": [
+      "Load-test the queue service at 3–5x normal peak to find the bottleneck (item fetch, video preview, or tag writes).",
+      "Prefetch the next few items and their video previews so a slow fetch doesn't block the moderator.",
+      "Replace 'Something went wrong' with retry-in-place that preserves the moderator's position in the queue.",
+      "Add alerting on queue-service latency so the team knows about a spike before moderators report it."
+    ],
+    "ask": "A one-week performance investigation by one backend engineer this quarter, with a decision point on whether the fix is caching/prefetch or needs a larger scaling change."
+  },
+  "f3": {
+    "title": "Give team leads real-time, per-queue volume for staffing",
+    "problem": "The PRD promised team leads real-time queue volume for staffing, but the dashboard lags 15–20 minutes and only shows totals. With about 3 trained moderators per queue, one absence can create a 200+ item backlog before a lead sees it, so leads still cross-check against the old spreadsheet.",
+    "evidence": {
+      "feedbackCount": 4,
+      "sources": {
+        "Sync": 2,
+        "Slack": 1,
+        "Observation": 1
+      },
+      "quotes": [
+        "Team leads say the volume dashboard lags 15–20 minutes behind the actual queue, so staffing calls get made on stale numbers.",
+        "We only have about 3 trained moderators per queue. When one calls out, I can't see the backlog building until it's already 200+ deep.",
+        "Team lead kept the old staffing spreadsheet open next to the dashboard to cross-check numbers during morning standup.",
+        "Leads like having a dashboard at all (much better than the spreadsheet) but need volume by queue and by hour to plan shifts."
+      ]
+    },
+    "prdGoal": "Team leads can see queue volume in real time to plan staffing.",
+    "whoAffected": "Team leads who make daily staffing calls, and moderators on thinly staffed queues who absorb the backlog when coverage slips.",
+    "impactIfUnsolved": "Staffing keeps being planned on stale numbers, backlogs are caught late, and leads keep maintaining a parallel spreadsheet, which undercuts adoption of the tool and its data.",
+    "proposedDirection": [
+      "Cut dashboard latency to under 1 minute (streaming counts instead of a batch refresh).",
+      "Break volume down by queue and by hour, alongside the number of trained moderators currently active on each queue.",
+      "Add a backlog threshold alert per queue (e.g. notify the lead above 100 items).",
+      "Retire the staffing spreadsheet once leads confirm the numbers match."
+    ],
+    "ask": "One full-stack engineer for about two weeks this quarter to move dashboard counts to near-real-time and add the per-queue/hour view; the PM will own threshold defaults with team leads."
+  },
+  "f4": {
+    "title": "Add keyboard shortcuts to the moderation workflow",
+    "problem": "Every action in the tool — approve, tag, next — requires the mouse. Moderators report wrist strain by hour six, some already wear wrist braces, and they have lost the J/K navigation and number-key tagging they relied on in the old tool.",
+    "evidence": {
+      "feedbackCount": 3,
+      "sources": {
+        "Widget": 1,
+        "Observation": 1,
+        "Slack": 1
+      },
+      "quotes": [
+        "Please add keyboard shortcuts. Clicking for every tag and every 'next' is killing my wrist by hour six.",
+        "Every moderator observed reached for the mouse for every action: approve, tag, next. Two were wearing wrist braces.",
+        "The old tool had J/K to move between items and number keys for tags. We lost all of that in v1."
+      ]
+    },
+    "prdGoal": "Unplanned issue",
+    "whoAffected": "Every moderator, on every item, for full shifts.",
+    "impactIfUnsolved": "Ergonomic strain and repetitive-strain risk accumulate across the team, and review speed plateaus. It's a small change with a daily, visible quality-of-life cost if skipped.",
+    "proposedDirection": [
+      "J/K (or arrow keys) to move between items, Enter to confirm.",
+      "Number keys for the most-used policy tags, configurable per queue.",
+      "A shortcut for Escalate, with a confirmation step to prevent accidental escalations.",
+      "A '?' overlay listing all shortcuts."
+    ],
+    "ask": "Roughly three to five engineering days from one frontend engineer, which can ride alongside the escalation work in the same sprint."
+  },
+  "f5": {
+    "title": "Make policy tags unambiguous and consistent",
+    "problem": "Moderators disagree on overlapping tags: QA measured about 12% disagreement between 'harassment' and 'bullying', and the same video gets tagged three different ways under 'graphic violence' vs 'violent extremism'. The tag list is also long enough that moderators scroll past 30 tags to find common ones.",
+    "evidence": {
+      "feedbackCount": 4,
+      "sources": {
+        "Slack": 1,
+        "Sync": 1,
+        "Widget": 2
+      },
+      "quotes": [
+        "Is 'graphic violence' vs 'violent extremism' about intent or content? Three of us tagged the same video three different ways today.",
+        "QA found about 12% disagreement between the 'harassment' and 'bullying' tags in last week's audit sample.",
+        "Policy tag list is too long. I scroll past 30 tags to find 'spam'.",
+        "The tag descriptions on hover are really helpful for the newer tags."
+      ]
+    },
+    "prdGoal": "Policy tags are clear and consistent across moderators.",
+    "whoAffected": "All moderators (especially newer ones), QA reviewers, and the policy team that relies on tag data for reporting.",
+    "impactIfUnsolved": "Enforcement stays inconsistent across moderators, QA metrics stay noisy, and policy reporting is built on unreliable labels, which is an audit risk.",
+    "proposedDirection": [
+      "Work with Policy to merge or sharply define the overlapping tag pairs, with decision rules in the hover descriptions.",
+      "Surface the most-used tags per queue at the top of the list; collapse the rest.",
+      "Show a short 'how to decide' example for high-disagreement tags inside the tag panel.",
+      "Track per-tag disagreement rates from QA as an ongoing health metric."
+    ],
+    "ask": "Two to three days of frontend work to reorder and group tags this quarter, contingent on the policy team finalizing definitions, which the PM will drive."
+  }
+}
