@@ -25,6 +25,9 @@ export type Mode = "demo" | "live";
 
 export interface AnalyzeResponse {
   scorecard: Scorecard;
+  /** The project name and feedback the scorecard's ids refer to. */
+  projectName: string;
+  feedback: FeedbackItem[];
   mode: Mode;
   /** In demo mode: true when the submitted inputs differ from the sample. */
   inputsEdited?: boolean;

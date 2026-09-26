@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { FriendlyError, generateJson, hasApiKey } from "@/lib/anthropic";
-import { DEMO_SCORECARD, matchesSample, sleep } from "@/lib/demo";
+import { DEMO_FEEDBACK, DEMO_SCORECARD, matchesSample, sleep } from "@/lib/demo";
+import { SAMPLE_PROJECT_NAME } from "@/data/sample";
 import { checkScorecard, normalizeScorecard } from "@/lib/normalize";
 import { ANALYZE_SYSTEM, analyzePrompt } from "@/lib/prompts";
 import { AnalyzeRequestSchema, ScorecardSchema } from "@/lib/schemas";
@@ -22,6 +23,8 @@ export async function POST(req: Request): Promise<NextResponse<AnalyzeResponse |
     await sleep(1500);
     return NextResponse.json({
       scorecard: DEMO_SCORECARD,
+      projectName: SAMPLE_PROJECT_NAME,
+      feedback: DEMO_FEEDBACK,
       mode: "demo",
       inputsEdited: !matchesSample(projectName, goals, feedback),
     });
@@ -34,7 +37,12 @@ export async function POST(req: Request): Promise<NextResponse<AnalyzeResponse |
       schema: ScorecardSchema,
       check: (sc) => checkScorecard(sc, goals.length),
     });
-    return NextResponse.json({ scorecard: normalizeScorecard(raw, goals, feedback), mode: "live" });
+    return NextResponse.json({
+      scorecard: normalizeScorecard(raw, goals, feedback),
+      projectName,
+      feedback,
+      mode: "live",
+    });
   } catch (err) {
     const e = err instanceof FriendlyError ? err : new FriendlyError("Analysis failed. Please try again.", 500);
     return NextResponse.json({ error: e.message }, { status: e.status });
