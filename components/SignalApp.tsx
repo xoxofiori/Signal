@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { SAMPLE_FEEDBACK, SAMPLE_GOALS, SAMPLE_PROJECT_NAME } from "@/data/sample";
 import { parseFeedback, parseGoals } from "@/lib/parse";
-import type { AnalyzeResponse, ApiError, FixNextItem } from "@/lib/types";
+import type { AnalyzeResponse, ApiError, FixNextItem, Pitch, PitchResponse } from "@/lib/types";
 import Header from "./Header";
 import InputForm, { type InputValues } from "./InputForm";
+import PitchView from "./PitchView";
 import ScorecardView from "./ScorecardView";
 import Stepper, { type Step } from "./Stepper";
 
@@ -17,6 +18,10 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [pitches, setPitches] = useState<Record<string, Pitch>>({});
+  const [selected, setSelected] = useState<FixNextItem | null>(null);
+  const [pitchLoading, setPitchLoading] = useState(false);
+  const [pitchError, setPitchError] = useState<string | null>(null);
 
   const loadSample = () =>
     setValues({ projectName: SAMPLE_PROJECT_NAME, goalsText: SAMPLE_GOALS, feedbackText: SAMPLE_FEEDBACK });
@@ -40,6 +45,8 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
         | ApiError;
       if (!res.ok || "error" in data) throw new Error("error" in data ? data.error : "Analysis failed.");
       setAnalysis(data);
+      setPitches({});
+      setSelected(null);
     } catch (err) {
       setAnalyzeError(err instanceof Error ? err.message : "Analysis failed. Please try again.");
     } finally {
@@ -47,9 +54,44 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
     }
   }
 
-  const openPitch = (item: FixNextItem) => {
-    void item;
-  };
+  async function openPitch(item: FixNextItem) {
+    if (!analysis) return;
+    setSelected(item);
+    setStep("pitch");
+    setPitchError(null);
+    window.scrollTo({ top: 0 });
+    if (pitches[item.id]) return;
+
+    const { scorecard, feedback, projectName } = analysis;
+    const goal = scorecard.goals.find((g) => g.id === item.refId);
+    const theme = scorecard.unplanned.find((u) => u.id === item.refId);
+    const ids = goal?.feedbackIds ?? theme?.feedbackIds ?? [];
+    setPitchLoading(true);
+    try {
+      const res = await fetch("/api/pitch", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          projectName,
+          item,
+          context: { goal: goal?.goal, verdict: goal?.verdict, summary: theme?.summary },
+          linkedFeedback: ids.map((i) => feedback[i]).filter(Boolean),
+        }),
+      });
+      const data = (await res.json().catch(() => ({ error: "Unexpected response from the server." }))) as
+        | PitchResponse
+        | ApiError;
+      if (!res.ok || "error" in data) throw new Error("error" in data ? data.error : "Pitch generation failed.");
+      setPitches((p) => ({ ...p, [item.id]: data.pitch }));
+    } catch (err) {
+      setPitchError(err instanceof Error ? err.message : "Pitch generation failed. Please try again.");
+    } finally {
+      setPitchLoading(false);
+    }
+  }
+
+  const backToScorecard = () => setStep("scorecard");
+  const pitch = selected ? pitches[selected.id] : undefined;
 
   return (
     <div className="min-h-screen">
@@ -66,7 +108,7 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
           </div>
           <Stepper
             current={step}
-            reachable={{ input: !analyzing, scorecard: !!analysis && !analyzing, pitch: false }}
+            reachable={{ input: !analyzing, scorecard: !!analysis && !analyzing, pitch: !!pitch }}
             onSelect={setStep}
           />
         </div>
@@ -87,11 +129,17 @@ export default function SignalApp({ demoMode }: { demoMode: boolean }) {
             scorecard={analysis.scorecard}
             feedback={analysis.feedback}
             onPitch={openPitch}
-            pitchReady={new Set()}
+            pitchReady={new Set(Object.keys(pitches))}
           />
         )}
         {step === "scorecard" && analyzing && <p className="text-muted">Analyzing…</p>}
         {step === "scorecard" && analyzeError && <p className="text-failing">{analyzeError}</p>}
+
+        {step === "pitch" && analysis && pitch && (
+          <PitchView pitch={pitch} projectName={analysis.projectName} onBack={backToScorecard} />
+        )}
+        {step === "pitch" && pitchLoading && <p className="text-muted">Writing pitch…</p>}
+        {step === "pitch" && pitchError && <p className="text-failing">{pitchError}</p>}
       </main>
     </div>
   );
