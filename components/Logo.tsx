@@ -2,7 +2,7 @@
 export default function Logo({ size = 28, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="-125 -125 250 250" className={className} aria-hidden>
-      <g transform="rotate(45)" fill="none" stroke="currentColor" strokeWidth="30">
+      <g transform="rotate(45)" fill="none" stroke="currentColor" strokeWidth="38">
         {[0, 90, 180, 270].map((deg) => (
           <path
             key={deg}
